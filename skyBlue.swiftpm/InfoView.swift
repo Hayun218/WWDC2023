@@ -9,8 +9,23 @@ import SwiftUI
 
 struct InfoView: View {
     var body: some View {
-        Text("The sky seems high when ")
-            .font(.custom(.Gaegu, size: 40))
+        VStack{
+            
+            HStack{
+                Image("humidity")
+            }
+            
+            HStack{
+                Image("temperature")
+            }
+            
+            HStack{
+                Image("dust")
+            }
+            
+        }
+        
+        
     }
 }
 

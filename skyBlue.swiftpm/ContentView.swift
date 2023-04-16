@@ -11,10 +11,14 @@ struct ContentView: View {
     @State private var middleDust = false
     @State private var highDust = false
     @State private var isRainy = false
-    @State private var opa = 0.6
+    @State private var opa = 0.8
     @State private var allOpa = 0.3
     @State private var showInfo = true
     @State private var showDes = true
+    @State private var skyH = -100.0
+    @State private var sunW = 0.0
+    @State private var sunOpa = 1.0
+    
     var minV = 0.0
     var maxV = 100.0
     
@@ -24,7 +28,7 @@ struct ContentView: View {
         
         GeometryReader{ geometry in
             
-            let barWidth = geometry.size.width - 250
+            let barWidth = geometry.size.width - 300
             let heightView = geometry.size.height
             // let imageOffset = CGSize.zero
             
@@ -38,10 +42,12 @@ struct ContentView: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width/3)
-                            //.padding(.leading)
-                                .position(x: 100, y:200)
+                                .offset(x: sunW, y: -200)
+                                .animation(.easeInOut(duration: 1), value: sunW)
+                                .opacity(sunOpa)
+                                .animation(.easeInOut(duration: 1), value: sunOpa)
                             Spacer()
-                        }
+                        }.frame(width: geometry.size.width, height: heightView - 300)
                         
                         
                         
@@ -49,8 +55,10 @@ struct ContentView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: geometry.size.width - 100)
-                            .offset(y:-200)
+                            .offset(y: skyH)
+                            .animation(.easeInOut(duration: 1), value: skyH)
                             .opacity(opa)
+                            .animation(.easeInOut(duration: 1), value: opa)
                         
                         
                         if isRainy == true{
@@ -62,33 +70,55 @@ struct ContentView: View {
                             Image("dust1")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(height: geometry.size.height+100)
+                                .frame(width: geometry.size.width)
                                 .offset(y: 0)
-                                .animation(.default, value: lowDust)
+                                .animation(.easeInOut(duration: 1))
                         }
                         if middleDust == true{
                             Image("dust2")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(height: geometry.size.height)
+                                .frame(height: heightView+200)
                                 .offset(y : 0)
+                                .animation(.easeInOut(duration: 1))
                         }
                         if highDust == true{
                             Image("dust3")
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(height: geometry.size.height)
+                                .frame(height: heightView+400)
                                 .offset(y : 0)
+                                .animation(.easeInOut(duration: 1))
                         }
                         
                         
                     }
                     .frame(width: geometry.size.width, height: heightView - 300)
                     
-                    
+                    HStack{
+                        Label("Humidity: ", systemImage: "drop")
+                            .font(.custom(.Gaegu, size: 30))
+                            .padding()
+                        Spacer()
+                        Slider(value: $hue, in: minV...maxV, step: 10)
+                            .padding()
+                            .accentColor(.blue)
+                            .frame(width: barWidth, height: 20)
+                    }.padding(.horizontal)
+                        .onChange(of: hue) { newValue in
+                            if hue > 50{
+                                isRainy = true
+                                sunW = -100
+                                
+                            } else{
+                                isRainy = false
+                                sunW = 0
+                            }
+                            defineOpa()
+                        }
                     
                     HStack{
-                        Label("Temp: ", systemImage: "sun.max")
+                        Label("Temperature: ", systemImage: "sun.max")
                             .font(.custom(.Gaegu, size: 30))
                             .padding()
                         Spacer()
@@ -105,24 +135,7 @@ struct ContentView: View {
                         }
                     
                     
-                    HStack{
-                        Label("Humidity: ", systemImage: "drop")
-                            .font(.custom(.Gaegu, size: 30))
-                            .padding()
-                        Spacer()
-                        Slider(value: $hue, in: minV...maxV, step: 10)
-                            .padding()
-                            .accentColor(.blue)
-                            .frame(width: barWidth, height: 20)
-                    }.padding(.horizontal)
-                        .onChange(of: hue) { newValue in
-                            if hue > 50{
-                                isRainy = true
-                            } else{
-                                isRainy = false
-                            }
-                            defineOpa()
-                        }
+     
                     
                     HStack{
                         Label("Dust: ", systemImage: "sun.dust")
@@ -191,7 +204,7 @@ struct ContentView: View {
                 
             }
             
-        } .navigationBarTitle("")
+        } 
             .navigationBarHidden(true)
     }
     
@@ -204,16 +217,22 @@ struct ContentView: View {
         switch result {
         case 0..<20:
             opa = 1.0
+            skyH = -200
         case 20..<40:
             opa = 0.8
+            skyH = -100
         case 40..<60:
-            opa = 0.6
+            opa = 0.5
+            skyH = -0
         case 60..<80:
-            opa = 0.4
+            opa = 0.3
+            skyH = 100
         case 80..<101:
-            opa = 0.2
+            opa = 0.1
+            skyH = 200
         default:
-            opa = 0.6
+            opa = 0.8
+            skyH = -100
         }
     }
 }
