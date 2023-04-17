@@ -2,26 +2,41 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var backgroundSnapshot: UIImage?
+
+    // for another view
+    @State private var showInfo = false
+    
+    // for Slider var
+    @State private var tempSlider : CGFloat = 0
+    @State private var hueSlider : CGFloat = 0
+    @State private var dustSlider : CGFloat = 0
+    
+    // for proportion
     @State private var temperature = 0.0
     @State private var hue = 0.0
     @State private var dust = 0.0
+    
+    // for moving or opacity of img
     @State private var movingH = 0.0
+    @State private var skyH = -100.0
+    @State private var sunW = 0.0
+    @State private var opa = 0.8
+    @State private var allOpa = 1.0
+    @State private var sunOpa = 1.0
+    
+    
+    // Dust Img
     @State private var lowDust = false
     @State private var middleDust = false
     @State private var highDust = false
+    
+    // Rain Img
     @State private var isRainy = false
-    @State private var opa = 0.8
-    @State private var allOpa = 0.3
-    @State private var showInfo = true
-    @State private var showDes = true
-    @State private var skyH = -100.0
-    @State private var sunW = 0.0
-    @State private var sunOpa = 1.0
     
-    var minV = 0.0
-    var maxV = 100.0
     
+
+    
+  
     
     var body: some View {
         
@@ -44,10 +59,12 @@ struct ContentView: View {
                                 .frame(width: geometry.size.width/3)
                                 .offset(x: sunW, y: -200)
                                 .animation(.easeInOut(duration: 1), value: sunW)
-                                .opacity(sunOpa)
-                                .animation(.easeInOut(duration: 1), value: sunOpa)
+                                .opacity(opa)
+                                .animation(.easeInOut(duration: 1), value: opa)
+                            
                             Spacer()
-                        }.frame(width: geometry.size.width, height: heightView - 300)
+                        }
+                        .frame(width: geometry.size.width, height: heightView - 300)
                         
                         
                         
@@ -94,96 +111,214 @@ struct ContentView: View {
                         
                     }
                     .frame(width: geometry.size.width, height: heightView - 300)
+                
                     
+                // humidity Slider
                     HStack{
                         Label("Humidity: ", systemImage: "drop")
                             .font(.custom(.Gaegu, size: 30))
+                            .frame(width: 250)
                             .padding()
                         Spacer()
-                        Slider(value: $hue, in: minV...maxV, step: 10)
-                            .padding()
-                            .accentColor(.blue)
-                            .frame(width: barWidth, height: 20)
-                    }.padding(.horizontal)
-                        .onChange(of: hue) { newValue in
-                            if hue > 50{
-                                isRainy = true
-                                sunW = -100
+                        ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)){
+                           
+                            Capsule()
+                                .fill(Color.blue.opacity(0.25))
+                                .frame(height: 30)
+                                .padding(.trailing)
                                 
-                            } else{
-                                isRainy = false
-                                sunW = 0
+        
+                            
+                            Capsule()
+                                .fill(Color.black.opacity(0.25))
+                                .frame(width: hueSlider+20, height: 30)
+                                .padding(.trailing)
+                                
+                            
+                            HStack(spacing: (UIScreen.main.bounds.width - 300) / 14){
+                                ForEach(0..<12, id: \.self){index in
+                                    
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: index % 4 == 0 ? 7 : 4, height: index % 4 == 0 ? 7 : 4)
+                                }
                             }
-                            defineOpa()
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 35, height: 35)
+                                .background(Circle().stroke(Color.white,lineWidth: 5))
+                                .offset(x: hueSlider)
+                                .gesture(DragGesture().onChanged({ (value) in
+                                    if value.location.x >= 50 && value.location.x <= UIScreen.main.bounds.width - 50 {
+                                        hueSlider = value.location.x - 50
+                                    }
+                                    if hueSlider >= 240{
+                                        isRainy = true
+                                    } else if hueSlider < 240{
+                                        isRainy = false
+                                    }
+                                    
+                                    hue = (hueSlider/480) * 100
+                                    defineOpa()
+                                }))
                         }
+                    }
                     
-                    HStack{
-                        Label("Temperature: ", systemImage: "sun.max")
-                            .font(.custom(.Gaegu, size: 30))
-                            .padding()
-                        Spacer()
-                        
-                        
-                        Slider(value: $temperature, in: minV...maxV, step: 10)
-                            .padding()
-                            .accentColor(.orange)
-                            .frame(width: barWidth, height: 20)
-                        
-                    }.padding(.horizontal)
-                        .onChange(of: temperature) { newValue in
-                            defineOpa()
+                    // temperature Slider
+                        HStack{
+                            Label("Temperature: ", systemImage: "sun.max")
+                                .font(.custom(.Gaegu, size: 30))
+                                .frame(width: 250)
+                                .padding()
+                            Spacer()
+                            ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)){
+                               
+                                Capsule()
+                                    .fill(Color.red.opacity(0.25))
+                                    .frame(height: 30)
+                                    .padding(.trailing)
+                                    
+            
+                                
+                                Capsule()
+                                    .fill(Color.black.opacity(0.25))
+                                    .frame(width: tempSlider+20, height: 30)
+                                    .padding(.trailing)
+                                    
+                                
+                                HStack(spacing: (UIScreen.main.bounds.width - 300) / 14){
+                                    ForEach(0..<12, id: \.self){index in
+                                        
+                                        Circle()
+                                            .fill(Color.white)
+                                            .frame(width: index % 4 == 0 ? 7 : 4, height: index % 4 == 0 ? 7 : 4)
+                                    }
+                                }
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 35, height: 35)
+                                    .background(Circle().stroke(Color.white,lineWidth: 5))
+                                    .offset(x: tempSlider)
+                                    .gesture(DragGesture().onChanged({ (value) in
+                                        if value.location.x >= 50 && value.location.x <= UIScreen.main.bounds.width - 50 {
+                                            tempSlider = value.location.x - 50
+                                        }
+                                        
+                                        temperature = (tempSlider/480) * 100
+                                        defineOpa()
+                                    }))
+                            }
                         }
-                    
-                    
-     
                     
                     HStack{
                         Label("Dust: ", systemImage: "sun.dust")
                             .font(.custom(.Gaegu, size: 30))
+                            .frame(width: 250)
                             .padding()
                         Spacer()
-                        Slider(value: $dust, in: minV...maxV, step: 10)
-                            .padding()
-                            .accentColor(.gray)
-                            .frame(width: barWidth, height: 20)
-                            .onChange(of: dust) { newValue in
-                                switch newValue {
-                                case 0..<25:
-                                    lowDust = false
-                                    middleDust = false
-                                    highDust = false
-                                case 25..<50:
-                                    lowDust = true
-                                    middleDust = false
-                                    highDust = false
-                                case 50..<75:
-                                    lowDust = true
-                                    middleDust = true
-                                    highDust = false
-                                case 75..<101:
-                                    lowDust = true
-                                    middleDust = true
-                                    highDust = true
-                                default:
-                                    lowDust = false
-                                    middleDust = false
-                                    highDust = false
-                                }
-                                defineOpa()
+                        ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)){
+                           
+                            Capsule()
+                                .fill(Color.gray.opacity(0.25))
+                                .frame(height: 30)
+                                .padding(.trailing)
                                 
+        
+                            
+                            Capsule()
+                                .fill(Color.black.opacity(0.25))
+                                .frame(width: dustSlider+20, height: 30)
+                                .padding(.trailing)
+                                
+                            
+                            HStack(spacing: (UIScreen.main.bounds.width - 300) / 14){
+                                ForEach(0..<12, id: \.self){index in
+                                    
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: index % 4 == 0 ? 7 : 4, height: index % 4 == 0 ? 7 : 4)
+                                }
                             }
-                        
-                    }.padding(.horizontal)
+                            Circle()
+                                .fill(Color.gray)
+                                .frame(width: 35, height: 35)
+                                .background(Circle().stroke(Color.white,lineWidth: 5))
+                                .offset(x: dustSlider)
+                                .gesture(DragGesture().onChanged({ (value) in
+                                    if value.location.x >= 50 && value.location.x <= UIScreen.main.bounds.width - 50 {
+                                        dustSlider = value.location.x - 50
+                                    }
+                                    
+                                    dust = (dustSlider/480) * 100
+                                    
+                                    switch dust {
+                                    case 0..<25:
+                                        lowDust = false
+                                        middleDust = false
+                                        highDust = false
+                                    case 25..<50:
+                                        lowDust = true
+                                        middleDust = false
+                                        highDust = false
+                                    case 50..<75:
+                                        lowDust = true
+                                        middleDust = true
+                                        highDust = false
+                                    case 75..<101:
+                                        lowDust = true
+                                        middleDust = true
+                                        highDust = true
+                                    default:
+                                        lowDust = false
+                                        middleDust = false
+                                        highDust = false
+                                    }
+                                    defineOpa()
+                                    
+                                }))
+                        }
+                    }
                     
                     Spacer()
                 }
                 
             }
-            .background(allOpa == 1 ? .clear : .gray)
+            .background(allOpa == 1 ? .clear : .black)
             .opacity(allOpa)
             
             VStack{
                 
+                
+                
+                
+                if showInfo {
+                    HStack{
+                        Spacer()
+                        Button {
+                            if showInfo == true{
+                                showInfo = false
+                                allOpa = 1.0
+                            } else{
+                                showInfo = true
+                                allOpa = 0.3
+                            }
+                            
+                        } label: {
+                            Label(showInfo ? "Look at the Sky" : "Tip!!", systemImage: "cloud")
+                                .font(.custom(.Gaegu, size: 40))
+                        }.padding()
+                    }
+                    
+                    InfoView()
+                }
+                
+            }
+            
+        }
+        .navigationBarHidden(showInfo ? true : false)
+        .navigationBarBackButtonHidden(showInfo ? true : false)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
                     if showInfo == true{
                         showInfo = false
@@ -194,19 +329,20 @@ struct ContentView: View {
                     }
                     
                 } label: {
-                    Label(showInfo ? "Look at the Sky" : "Tip!!", systemImage: "cloud")
-                        .font(.custom(.Gaegu, size: 40))
-                }.padding()
-                
-                if showInfo {
-                    InfoView()
-                } 
-                
+                    HStack{
+                        Image(systemName: "cloud")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 30)
+                        Text("Tip!!")
+                            .font(.custom(.Gaegu, size: 40))
+                    }
+                }
             }
-            
-        } 
-            .navigationBarHidden(true)
+        }
     }
+    
+    
     
     
     

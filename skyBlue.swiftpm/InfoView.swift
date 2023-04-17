@@ -13,11 +13,24 @@ struct InfoView: View {
             
             HStack{
                 Image("humidity")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 100)
+                Image(systemName: "arrow.up")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 100)
+                    .foregroundColor(.blue)
             }
+            Spacer()
             
             HStack{
                 Image("temperature")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 100)
             }
+            Spacer()
             
             HStack{
                 Image("dust")

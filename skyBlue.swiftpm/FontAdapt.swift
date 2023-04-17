@@ -4,7 +4,6 @@ import SwiftUI
 enum MyCustomFonts: String, CaseIterable {
     
     //e.g, the fonts below:
-    case SFToontime = "SFToontime.ttf"
     case Gaegu = "Gaegu-Regular.ttf"
     case Gaegu_bold = "Gaegu-Bold.ttf"
 

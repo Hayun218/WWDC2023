@@ -47,7 +47,7 @@ struct IntroView: View {
                         .foregroundColor(.red)
                         
                     
-                    Text("As the scattering occurs due to the particles in the atmosphere. There are three main factors that affect the density of atmosphere,")
+                    Text("As the scattering occurs due to the particles in the atmosphere, the density of atmosphere changes the height and color of the sky. Then, there are three main factors that affect the density of atmosphere,")
                         .font(.custom(.Gaegu, size: 35))
                         .multilineTextAlignment(.center)
                      Text("humidity, ")
@@ -72,13 +72,16 @@ struct IntroView: View {
 
                     NavigationLink(destination: ContentView()){
                         HStack{
-                            Image(systemName: "cloud")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: 30)
                             
-                            Text("Let's look at the Sky")
-                                .font(.custom(.Gaegu_bold, size: 40))
+                            
+                            if cloud == true{
+                                Image(systemName: "cloud")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 30)
+                                Text("Let's look at the Sky")
+                                    .font(.custom(.Gaegu_bold, size: 40))
+                            }
                                
                         }
                     }
