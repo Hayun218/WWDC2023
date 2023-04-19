@@ -24,7 +24,7 @@ struct firstScene: View {
                     .frame(width: 400)
                     .offset(y: offsetY)
                     .animation(Animation.easeInOut(duration: 1)
-                        .repeatForever())
+                        .repeatForever(), value: offsetY)
                     .onAppear {
                         self.offsetY = -10
                     }

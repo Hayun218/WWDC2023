@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "skyBlue",
+    name: "High Blue",
     platforms: [
         .iOS("15.2")
     ],
     products: [
         .iOSApplication(
-            name: "skyBlue",
+            name: "High Blue",
             targets: ["AppModule"],
             bundleIdentifier: "com.yun.skyBlue",
             teamIdentifier: "SL6KBD5WZW",

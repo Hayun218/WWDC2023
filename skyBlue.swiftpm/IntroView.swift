@@ -12,7 +12,6 @@ struct IntroView: View {
     
     var body: some View {
         NavigationView {
-            
 
             VStack{
                 VStack{
@@ -21,11 +20,6 @@ struct IntroView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 400)
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                    self.cloud = true
-                                }
-                            }
                     } else{
                         Image("threeElements")
                             .resizable()
@@ -40,14 +34,15 @@ struct IntroView: View {
                         .font(.custom(.Gaegu, size: 35))
                         .multilineTextAlignment(.center)
                     
-                    Text("The sky seems being changed because of")
+                    Text("The sky is the region of space visible on the earth. Its color is result of")
                         .font(.custom(.Gaegu, size: 35))
-                    Text("the scattering of lights.\n")
+                        .multilineTextAlignment(.center)
+                    Text("the scattering of sunlight.\n")
                         .font(.custom(.Gaegu_bold, size: 40))
                         .foregroundColor(.red)
                         
                     
-                    Text("As the scattering occurs due to the particles in the atmosphere, the density of atmosphere changes the height and color of the sky. Then, there are three main factors that affect the density of atmosphere,")
+                    Text("As the scattering occurs due to the particles in the atmosphere, the density of air affects the look of the sky. Then, there are three main factors that affect the density of atmosphere,")
                         .font(.custom(.Gaegu, size: 35))
                         .multilineTextAlignment(.center)
                      Text("humidity, ")
@@ -57,7 +52,7 @@ struct IntroView: View {
                         .font(.custom(.Gaegu_bold, size: 35))
                         .foregroundColor(.orange)
                      + Text("and ")
-                        .font(.custom(.Gaegu_bold, size: 35))
+                        .font(.custom(.Gaegu, size: 35))
                         .foregroundColor(.black)
                     + Text("dust.")
                        .font(.custom(.Gaegu_bold, size: 35))
@@ -84,12 +79,20 @@ struct IntroView: View {
                             }
                                
                         }
+                        .frame(height: 20)
                     }
                         .padding()
                 
             }
-        }.navigationBarBackButtonHidden(true)
-            .navigationViewStyle(StackNavigationViewStyle())
+        }
+        .onAppear {
+            self.cloud = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.cloud = true
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationViewStyle(StackNavigationViewStyle())
         
     }
     
